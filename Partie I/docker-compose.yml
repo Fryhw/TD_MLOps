@@ -1,0 +1,21 @@
+services:
+  service_b:
+    build:
+      context: ./service_b
+    volumes:
+      - sqlite_data:/data
+    restart: always
+
+  service_a:
+    build:
+      context: ./service_a
+    volumes:
+      - sqlite_data:/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      - service_b
+    restart: always
+
+volumes: # ajout d'un volume pour la base de donnée
+  sqlite_data:

@@ -1,0 +1,47 @@
+name: CI/CD Pipeline (Docker Compose)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔹 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🔹 Installer Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: 🔹 Construire l’image Docker
+        run: |
+          docker compose build
+
+      - name: 🔹 Lancer les tests avec pytest
+        run: |
+          docker compose run --rm service_b pytest tests/
+
+  push_to_docker_hub:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔹 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🔹 Connexion à Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: 🔹 Construire et pousser l’image
+        run: |
+          docker compose build
+          docker tag mon-image:latest ${{ secrets.DOCKER_USERNAME }}/mon-image:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/mon-image:latest
