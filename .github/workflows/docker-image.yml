@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: CI/CD Docker Compose
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
@@ -15,5 +14,29 @@ jobs:
       - name: 🔹 Checkout du code
         uses: actions/checkout@v4
 
-      - name: 🔹 Construire l’image Docker dans "Partie I"
-        run: docker build ./Partie\ I --file ./Partie\ I/Dockerfile --tag my-image-name:$(date +%s)
+      - name: 🔹 Installer Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: 🔹 Construire les services Docker Compose
+        run: |
+          cd "Partie I"
+          docker compose build
+
+      - name: 🔹 Vérifier que les conteneurs démarrent correctement
+        run: |
+          cd "Partie I"
+          docker compose up -d
+          sleep 10  # Laisser le temps aux conteneurs de démarrer
+          docker compose ps
+
+      - name: 🔹 Lancer les tests (si nécessaire)
+        run: |
+          cd "Partie I"
+          docker compose run --rm service_b pytest tests/
+
+      - name: 🔹 Nettoyage des conteneurs après les tests
+        run: |
+          cd "Partie I"
+          docker compose down
