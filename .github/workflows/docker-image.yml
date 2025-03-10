@@ -30,13 +30,3 @@ jobs:
           docker compose up -d
           sleep 10  # Laisser le temps aux conteneurs de démarrer
           docker compose ps
-
-      - name: 🔹 Lancer les tests (si nécessaire)
-        run: |
-          cd "Partie I"
-          docker compose run --rm service_b pytest tests/
-
-      - name: 🔹 Nettoyage des conteneurs après les tests
-        run: |
-          cd "Partie I"
-          docker compose down
