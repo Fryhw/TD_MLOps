@@ -9,10 +9,11 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: 🔹 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🔹 Construire l’image Docker dans "Partie I"
+        run: docker build ./Partie\ I --file ./Partie\ I/Dockerfile --tag my-image-name:$(date +%s)
